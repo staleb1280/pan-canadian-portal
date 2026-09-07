@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Preflight | AAIP Business & Immigration Portal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-slate-950 text-slate-100 font-sans antialiased min-h-screen flex flex-col">
+
+    <header class="border-b border-slate-800 bg-slate-900/60 backdrop-blur sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="bg-indigo-600 text-white p-2 rounded-lg font-bold text-lg"><i class="fa-solid fa-plane-departure"></i></div>
+                <div>
+                    <h1 class="font-bold text-lg tracking-tight">Preflight <span class="text-indigo-400 text-xs px-2 py-0.5 bg-indigo-950 border border-indigo-800 rounded-full">AAIP Engine</span></h1>
+                </div>
+            </div>
+            <div class="text-sm text-slate-400 flex items-center space-x-4">
+                <span><i class="fa-solid fa-shield-halved text-emerald-400 mr-1.5"></i>Secure Portal</span>
+                <span class="bg-slate-800 px-3 py-1 rounded-md text-slate-200">Alberta, Canada</span>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-grow max-w-7xl mx-auto px-6 py-8 grid grid-cols-1 lg:grid-cols-3 gap-8 w-full">
+        
+        <section class="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl flex flex-col justify-between">
+            <div>
+                <div class="flex items-center justify-between mb-6">
+                    <h2 class="text-xl font-semibold flex items-center"><i class="fa-solid fa-user-check text-indigo-400 mr-2.5"></i>Client Intake & Triage</h2>
+                    <span class="text-xs bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 px-2.5 py-1 rounded-full font-medium">Live Feed</span>
+                </div>
+                
+                <form id="intakeForm" class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Investor Full Name</label>
+                        <input type="text" id="investorName" value="Ahmed Al-Mansoor" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-slate-200 focus:outline-none focus:border-indigo-500">
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Currency</label>
+                            <select id="currency" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-3 text-slate-200 focus:outline-none focus:border-indigo-500">
+                                <option value="CAD">CAD ($)</option>
+                                <option value="USD">USD ($)</option>
+                                <option value="AED">AED (د.إ)</option>
+                                <option value="SAR">SAR (ر.س)</option>
+                                <option value="TRY">TRY (₺)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Net Worth</label>
+                            <input type="number" id="netWorth" value="1000000" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-slate-200 focus:outline-none focus:border-indigo-500">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Management Role & Experience</label>
+                        <div class="grid grid-cols-2 gap-2 mb-2">
+                            <select id="roleType" class="bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-xs text-slate-200">
+                                <option value="owner">Business Owner</option>
+                                <option value="manager">Senior Manager</option>
+                                <option value="both">Both Owner & Manager</option>
+                            </select>
+                            <select id="experienceYears" class="bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-xs text-slate-200">
+                                <option value="5">5 to 9 Years (Max Pts)</option>
+                                <option value="10">10+ Years</option>
+                                <option value="3">3 to 4 Years</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Intended Investment Capital</label>
+                        <input type="number" id="budget" value="200000" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-slate-200 focus:outline-none focus:border-indigo-500">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">CV / Resume Option</label>
+                        <div class="flex space-x-2">
+                            <input type="file" id="cvFile" class="w-full text-xs text-slate-400 file:mr-2 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-indigo-600 file:text-white hover:file:bg-indigo-500 bg-slate-950 border border-slate-800 rounded-xl p-1">
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <div class="mt-6 pt-6 border-t border-slate-800">
+                <button type="button" onclick="runAnalysis()" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-semibold py-3.5 px-4 rounded-xl transition duration-200 shadow-lg shadow-indigo-600/20 flex items-center justify-center space-x-2">
+                    <span>Generate Complete Feasibility & Settlement Plan</span>
+                    <i class="fa-solid fa-arrow-right"></i>
+                </button>
+            </div>
+        </section>
+
+        <section class="lg:col-span-2 space-y-6">
+            
+            <div id="resultsCard" class="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl hidden space-y-6">
+                <div class="flex items-center justify-between pb-4 border-b border-slate-800">
+                    <div>
+                        <h3 class="text-lg font-bold text-emerald-400 flex items-center"><i class="fa-solid fa-circle-check mr-2"></i>Analysis Complete & Logged</h3>
+                        <p class="text-xs text-slate-400" id="convertedNetWorthText">Converted to CAD successfully.</p>
+                    </div>
+                    <div class="text-right">
+                        <span class="text-2xl font-black text-indigo-400" id="feasibilityScore">96%</span>
+                        <p class="text-[10px] text-slate-400 uppercase tracking-wider">Match Index</p>
+                    </div>
+                </div>
+
+                <div>
+                    <h4 class="text-sm font-semibold text-slate-300 uppercase tracking-wider mb-3"><i class="fa-solid fa-store mr-2 text-indigo-400"></i>Recommended Community & A-Z Business Breakdown</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="communityMatches"></div>
+                </div>
+
+                <div class="bg-slate-950 border border-slate-800 rounded-xl p-5 space-y-3">
+                    <h4 class="text-sm font-semibold text-indigo-300 uppercase tracking-wider"><i class="fa-solid fa-house-laptop mr-2"></i>Canada Soft-Landing & Infrastructure Guide</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs text-slate-300">
+                        <div class="bg-slate-900 p-3 rounded-lg border border-slate-800">
+                            <span class="font-bold text-slate-100 block mb-1">Housing & Hubs</span>
+                            Westlock / Rocky Mountain House residential units. Proximity to Edmonton/Calgary major medical & educational centers.
+                        </div>
+                        <div class="bg-slate-900 p-3 rounded-lg border border-slate-800">
+                            <span class="font-bold text-slate-100 block mb-1">Utilities & Auto</span>
+                            High-speed fiber via Telus/Rogers. Dealership connections for immediate pre-owned family SUV/truck acquisition.
+                        </div>
+                        <div class="bg-slate-900 p-3 rounded-lg border border-slate-800">
+                            <span class="font-bold text-slate-100 block mb-1">Banking & Setup</span>
+                            Corporate & personal accounts via RBC, BMO, or CIBC. Local furnishing logistics fully supported.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-slate-950 border border-slate-800 rounded-xl p-5 space-y-2">
+                    <h4 class="text-sm font-semibold text-indigo-300 uppercase tracking-wider"><i class="fa-solid fa-file-signature mr-2"></i>Legal Representation Mandate</h4>
+                    <p class="text-xs text-slate-400 leading-relaxed">
+                        "I hereby formally appoint and retain Mr. Ahmad, Canadian Legal/Immigration Representative, to act as my authorized agent for all matters related to my AAIP application and business establishment in Alberta, Canada."
+                    </p>
+                </div>
+            </div>
+
+            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl">
+                <h3 class="text-lg font-semibold mb-4 flex items-center"><i class="fa-solid fa-calculator text-indigo-400 mr-2.5"></i>Government & Program Financial Structure</h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="bg-slate-950 p-4 rounded-xl border border-slate-800/80">
+                        <span class="text-xs text-slate-400 block mb-1">Min. Business Investment</span>
+                        <span class="text-xl font-bold text-slate-100">$100,000 CAD</span>
+                    </div>
+                    <div class="bg-slate-950 p-4 rounded-xl border border-slate-800/80">
+                        <span class="text-xs text-slate-400 block mb-1">Govt & Evaluation Fees</span>
+                        <span class="text-xl font-bold text-slate-100">~$8,700 CAD</span>
+                    </div>
+                    <div class="bg-slate-950 p-4 rounded-xl border border-slate-800/80">
+                        <span class="text-xs text-slate-400 block mb-1">Alberta Corporate Tax</span>
+                        <span class="text-xl font-bold text-emerald-400">8% Flat Rate</span>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
+    </main>
+
+    <script>
+        const SUPABASE_URL = "https://nyrzzrkmqsjmwuraxzvd.supabase.co";
+        const SUPABASE_KEY = "sb_publishable_CesVmIwUQ8L5olAUaaczTw_GUUdk_Xr";
+
+        function convertToCAD(amount, currency) {
+            const rates = { CAD: 1.0, USD: 1.38, AED: 0.375, SAR: 0.368, TRY: 0.040 };
+            return amount * (rates[currency] || 1.0);
+        }
+
+        async function runAnalysis() {
+            const name = document.getElementById('investorName').value;
+            const currency = document.getElementById('currency').value;
+            const rawNetWorth = parseFloat(document.getElementById('netWorth').value);
+            const rawBudget = parseFloat(document.getElementById('budget').value);
+            const card = document.getElementById('resultsCard');
+            const container = document.getElementById('communityMatches');
+
+            const netWorthCAD = convertToCAD(rawNetWorth, currency);
+            const budgetCAD = convertToCAD(rawBudget, currency);
+
+            if (netWorthCAD < 300000) {
+                alert("Minimum household net worth must equal at least $300,000 CAD under AAIP guidelines.");
+                return;
+            }
+
+            document.getElementById('convertedNetWorthText').innerText = `Converted: ${rawNetWorth.toLocaleString()} ${currency} = $${netWorthCAD.toLocaleString()} CAD`;
+
+            const matchedCommunity = "Westlock (Essential Retail & Services)";
+            const reportData = { investor_name: name, net_worth: netWorthCAD, budget: budgetCAD, matched_community: matchedCommunity };
+
+            try {
+                await fetch(`${SUPABASE_URL}/rest/v1/investor_reports`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}`, 'Prefer': 'return=minimal' },
+                    body: JSON.stringify(reportData)
+                });
+            } catch (err) {
+                console.error('Supabase write error:', err);
+            }
+
+            card.classList.remove('hidden');
+
+            const matches = [
+                { name: "Westlock", dist: "85 km North of Edmonton", biz: "Essential Retail & Automotive", cost: "$120,000 CAD", details: "Leasehold: $40k | Inventory: $50k | Working Capital: $30k | Ops: Full training provided." },
+                { name: "Rocky Mountain House", dist: "210 km North of Calgary", biz: "Tourism & Commercial Services", cost: "$180,000 CAD", details: "Leasehold: $60k | Equipment: $70k | Working Capital: $50k | High seasonal tourist traffic." }
+            ];
+
+            let html = '';
+            matches.forEach(m => {
+                html += `
+                    <div class="bg-slate-950 border border-slate-800 p-4 rounded-xl flex flex-col justify-between space-y-2">
+                        <div>
+                            <div class="flex justify-between items-start">
+                                <span class="font-bold text-slate-200 text-sm">${m.name}</span>
+                                <span class="text-[10px] bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-2 py-0.5 rounded-full">Max Points</span>
+                            </div>
+                            <p class="text-xs text-slate-400 mt-0.5">${m.dist}</p>
+                            <p class="text-xs text-indigo-300 mt-2 font-medium"><i class="fa-solid fa-briefcase mr-1"></i>${m.biz}</p>
+                            <p class="text-[11px] text-slate-400 mt-2 bg-slate-900 p-2 rounded border border-slate-800">${m.details}</p>
+                        </div>
+                        <div class="flex justify-between items-center pt-2 border-t border-slate-900 text-xs">
+                            <span class="text-slate-400">Total Capital:</span>
+                            <span class="font-bold text-slate-100">${m.cost}</span>
+                        </div>
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
+        }
+    </script>
+</body>
+</html>
