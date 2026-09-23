@@ -6,10 +6,22 @@ export default function InvestorAgreement() {
   const [signature, setSignature] = useState("");
   const [submitted, setSubmitted] = useState(false);
 
+  // Replace this placeholder link with your real Stripe Payment Link or verification portal
+  const STRIPE_GATEWAY_URL = "https://buy.stripe.com/your-live-link-here";
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (accepted && signature) {
       setSubmitted(true);
+    }
+  };
+
+  const handleProceedToPayment = () => {
+    if (STRIPE_GATEWAY_URL.includes("your-live-link-here")) {
+      // Fallback if URL is not set yet
+      window.open("https://stripe.com", "_blank");
+    } else {
+      window.location.href = STRIPE_GATEWAY_URL;
     }
   };
 
@@ -42,7 +54,7 @@ export default function InvestorAgreement() {
 
           <p className="text-white font-bold">3. BANK VERIFICATION & FUNDS VALIDATION</p>
           <p>
-            Client agrees to submit banking confirmation or liquid asset verification via encrypted Plaid/Stripe portal prior to finalizing business target acquisition proposals.
+            Client agrees to submit banking confirmation or liquid asset verification via encrypted portal prior to finalizing business target acquisition proposals.
           </p>
         </div>
 
@@ -77,7 +89,7 @@ export default function InvestorAgreement() {
             <button
               type="submit"
               disabled={!accepted || !signature}
-              className="w-full bg-emerald-500 hover:bg-emerald-400 disabled:opacity-50 text-slate-950 font-bold py-4 rounded-xl transition shadow-xl"
+              className="w-full bg-emerald-500 hover:bg-emerald-400 disabled:opacity-50 text-slate-950 font-bold py-4 rounded-xl transition shadow-xl cursor-pointer"
             >
               Sign Engagement Agreement & Connect Banking Verification →
             </button>
@@ -91,8 +103,8 @@ export default function InvestorAgreement() {
             <div className="pt-2">
               <button
                 type="button"
-                onClick={() => alert("Redirecting to Secure Bank Verification Gateway...")}
-                className="bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold px-6 py-3 rounded-xl transition"
+                onClick={handleProceedToPayment}
+                className="bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold px-6 py-3 rounded-xl transition shadow-md hover:shadow-blue-500/20 cursor-pointer"
               >
                 Proceed to Bank Verification (Stripe Portal) →
               </button>
