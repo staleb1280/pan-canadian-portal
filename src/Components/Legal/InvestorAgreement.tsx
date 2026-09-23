@@ -6,19 +6,40 @@ export default function InvestorAgreement() {
   const [signature, setSignature] = useState("");
   const [submitted, setSubmitted] = useState(false);
 
-  // Replace this placeholder link with your real Stripe Payment Link or verification portal
+  // Replace this link with your actual Stripe Payment Link or portal URL when ready
   const STRIPE_GATEWAY_URL = "https://buy.stripe.com/your-live-link-here";
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (accepted && signature) {
       setSubmitted(true);
+
+      // Update lead agreement status in Admin Portal storage
+      const existing = JSON.parse(localStorage.getItem("investnorth_leads") || "[]");
+      if (existing.length > 0) {
+        existing[0].signedAgreement = true;
+        existing[0].status = "Agreement Signed";
+        localStorage.setItem("investnorth_leads", JSON.stringify(existing));
+      } else {
+        const newLead = {
+          id: "lead-" + Date.now(),
+          fullName: signature,
+          email: "Pending email",
+          netWorthCAD: 500000,
+          investmentFundsCAD: 200000,
+          managementExperienceYears: 3,
+          languageLevelCLB: 5,
+          date: new Date().toLocaleDateString(),
+          status: "Agreement Signed",
+          signedAgreement: true,
+        };
+        localStorage.setItem("investnorth_leads", JSON.stringify([newLead]));
+      }
     }
   };
 
   const handleProceedToPayment = () => {
     if (STRIPE_GATEWAY_URL.includes("your-live-link-here")) {
-      // Fallback if URL is not set yet
       window.open("https://stripe.com", "_blank");
     } else {
       window.location.href = STRIPE_GATEWAY_URL;

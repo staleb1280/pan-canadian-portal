@@ -22,6 +22,18 @@ export default function IntakeWizard() {
     const evaluation = evaluatePNPEligibility(formData);
     setResults(evaluation);
     setStep(3);
+
+    // Save lead submission to LocalStorage for Admin Portal display
+    const newLead = {
+      id: "lead-" + Date.now(),
+      ...formData,
+      date: new Date().toLocaleDateString(),
+      status: "Audit Completed",
+      signedAgreement: false,
+    };
+
+    const existing = JSON.parse(localStorage.getItem("investnorth_leads") || "[]");
+    localStorage.setItem("investnorth_leads", JSON.stringify([newLead, ...existing]));
   };
 
   return (
@@ -71,7 +83,7 @@ export default function IntakeWizard() {
             <button
               onClick={() => setStep(2)}
               disabled={!formData.fullName || !formData.email}
-              className="w-full bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 text-white font-bold py-3.5 rounded-xl transition"
+              className="w-full bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 text-white font-bold py-3.5 rounded-xl transition cursor-pointer"
             >
               Continue to Financial Assessment →
             </button>
@@ -148,13 +160,13 @@ export default function IntakeWizard() {
               <button
                 type="button"
                 onClick={() => setStep(1)}
-                className="w-1/3 bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold py-3.5 rounded-xl transition"
+                className="w-1/3 bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold py-3.5 rounded-xl transition cursor-pointer"
               >
                 ← Back
               </button>
               <button
                 type="submit"
-                className="w-2/3 bg-gradient-to-r from-blue-600 to-emerald-600 hover:from-blue-500 hover:to-emerald-500 text-white font-bold py-3.5 rounded-xl transition shadow-lg"
+                className="w-2/3 bg-gradient-to-r from-blue-600 to-emerald-600 hover:from-blue-500 hover:to-emerald-500 text-white font-bold py-3.5 rounded-xl transition shadow-lg cursor-pointer"
               >
                 Generate Custom Pathway Report →
               </button>
