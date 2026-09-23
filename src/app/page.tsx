@@ -1,6 +1,6 @@
-﻿import Logo from "@/components/branding/Logo";
-import WhyCanada from "@/components/home/WhyCanada";
-import ProvincialShowcase from "@/components/home/ProvincialShowcase";
+﻿import Logo from "../Components/Branding/Logo";
+import WhyCanada from "../Components/Home/WhyCanada";
+import ProvincialShowcase from "../Components/Home/ProvincialShowcase";
 import Link from "next/link";
 
 export default function Home() {
@@ -21,19 +21,19 @@ export default function Home() {
             >
               Law Firm Portal
             </Link>
-            <Link
+            <a
               href="#wizard"
               className="bg-gradient-to-r from-blue-600 to-emerald-600 hover:from-blue-500 hover:to-emerald-500 text-white text-xs font-bold px-4 py-2.5 rounded-xl shadow-lg transition"
             >
               Start Eligibility Audit
-            </Link>
+            </a>
           </div>
         </div>
       </header>
 
-      {/* Hero Header */}
+      {/* Hero Section */}
       <main className="relative z-10">
-        <section className="pt-24 pb-16 px-6 text-center max-w-4xl mx-auto space-y-6">
+        <section className="pt-20 pb-12 px-6 text-center max-w-4xl mx-auto space-y-6">
           <span className="text-xs font-bold tracking-widest text-emerald-400 uppercase bg-emerald-950/60 border border-emerald-800/60 px-4 py-1.5 rounded-full inline-block">
             InvestNorth Canada
           </span>
@@ -44,7 +44,7 @@ export default function Home() {
             </span>
           </h1>
           <p className="text-slate-400 text-lg md:text-xl max-w-2xl mx-auto leading-relaxed">
-            The premier pre-qualification engine matching global investors and business buyers with official 2026 Canadian Provincial Nominee Pathways.
+            The premier pre-qualification engine matching global investors and business buyers with official Canadian Provincial Nominee Pathways.
           </p>
         </section>
 
