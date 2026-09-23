@@ -4,7 +4,6 @@ export default function ScopeNotice() {
   return (
     <section className="py-12 px-6 max-w-7xl mx-auto">
       <div className="bg-slate-900/80 border border-slate-800 rounded-3xl p-8 md:p-10 backdrop-blur-md relative overflow-hidden">
-        {/* Subtle Accent Glow */}
         <div className="absolute -top-24 -right-24 w-72 h-72 bg-blue-500/10 rounded-full blur-3xl pointer-events-none" />
 
         <div className="text-center max-w-3xl mx-auto mb-10 space-y-3">
@@ -19,9 +18,7 @@ export default function ScopeNotice() {
           </p>
         </div>
 
-        {/* 2-Column Comparison Flow */}
         <div className="grid md:grid-cols-2 gap-6">
-          {/* Column 1: Business Advisory (What You Do) */}
           <div className="bg-slate-950/70 border border-emerald-500/30 rounded-2xl p-6 space-y-4">
             <div className="flex items-center justify-between border-b border-slate-800 pb-3">
               <span className="text-xs font-bold uppercase tracking-wider text-emerald-400">
@@ -54,7 +51,6 @@ export default function ScopeNotice() {
             </ul>
           </div>
 
-          {/* Column 2: Legal Network (What Lawyers Do) */}
           <div className="bg-slate-950/70 border border-slate-800 rounded-2xl p-6 space-y-4">
             <div className="flex items-center justify-between border-b border-slate-800 pb-3">
               <span className="text-xs font-bold uppercase tracking-wider text-slate-400">
@@ -84,7 +80,6 @@ export default function ScopeNotice() {
           </div>
         </div>
 
-        {/* Footer Note */}
         <div className="mt-8 text-center pt-6 border-t border-slate-800">
           <p className="text-[11px] text-slate-500 max-w-2xl mx-auto leading-normal">
             <strong>Notice:</strong> InvestNorth Canada does not provide legal representation or official immigration advice. All legal services are rendered independently through qualified, licensed Canadian immigration law practitioners upon client referral.
