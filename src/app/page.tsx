@@ -1,7 +1,9 @@
 ﻿import Logo from "../Components/Branding/Logo";
+import ScopeNotice from "../Components/Home/ScopeNotice";
 import WhyCanada from "../Components/Home/WhyCanada";
 import ProvincialShowcase from "../Components/Home/ProvincialShowcase";
-import Link from "next/link";
+import IntakeWizard from "../Components/Wizard/IntakeWizard";
+import InvestorAgreement from "../Components/Legal/InvestorAgreement";
 
 export default function Home() {
   return (
@@ -14,26 +16,18 @@ export default function Home() {
       <header className="border-b border-slate-800/80 bg-[#070B14]/80 backdrop-blur-md sticky top-0 z-50 px-6 py-4">
         <div className="max-w-7xl mx-auto flex justify-between items-center">
           <Logo />
-          <div className="flex items-center gap-4">
-            <Link
-              href="/pitch"
-              className="text-xs font-semibold text-slate-400 hover:text-white transition hidden md:block"
-            >
-              Law Firm Portal
-            </Link>
-            <a
-              href="#wizard"
-              className="bg-gradient-to-r from-blue-600 to-emerald-600 hover:from-blue-500 hover:to-emerald-500 text-white text-xs font-bold px-4 py-2.5 rounded-xl shadow-lg transition"
-            >
-              Start Eligibility Audit
-            </a>
-          </div>
+          <a
+            href="#wizard"
+            className="bg-gradient-to-r from-blue-600 to-emerald-600 hover:from-blue-500 hover:to-emerald-500 text-white text-xs font-bold px-4 py-2.5 rounded-xl shadow-lg transition"
+          >
+            Start Eligibility Audit
+          </a>
         </div>
       </header>
 
-      {/* Hero Section */}
+      {/* Hero Header */}
       <main className="relative z-10">
-        <section className="pt-20 pb-12 px-6 text-center max-w-4xl mx-auto space-y-6">
+        <section className="pt-20 pb-8 px-6 text-center max-w-4xl mx-auto space-y-6">
           <span className="text-xs font-bold tracking-widest text-emerald-400 uppercase bg-emerald-950/60 border border-emerald-800/60 px-4 py-1.5 rounded-full inline-block">
             InvestNorth Canada
           </span>
@@ -48,11 +42,20 @@ export default function Home() {
           </p>
         </section>
 
+        {/* Scope of Service & Compliance Notice (Visible immediately to all investors) */}
+        <ScopeNotice />
+
         {/* Why Invest in Canada Section */}
         <WhyCanada />
 
         {/* Dynamic Provincial Presentation Engine */}
         <ProvincialShowcase />
+
+        {/* Investor Eligibility Screening Wizard */}
+        <IntakeWizard />
+
+        {/* Legal Engagement Agreement & Retainer Module */}
+        <InvestorAgreement />
       </main>
     </div>
   );
