@@ -1,48 +1,50 @@
-﻿export interface EligibilityResult {
-  isEligible: boolean;
-  minNetWorth: number;
-  minInvestment: number;
-  reasons: string[];
-  suggestedAlternatives: string[];
+﻿import { PNP_STREAMS, PNPStreamRequirement } from "./pnp-config";
+
+export interface ApplicantProfile {
+  netWorthCAD: number;
+  investmentFundsCAD: number;
+  preferredSectors: string[];
+  managementExperienceYears: number;
+  languageLevelCLB: number;
 }
 
-export const PROVINCIAL_THRESHOLDS: Record<string, { minNetWorth: number; minInvestment: number }> = {
-  Ontario: { minNetWorth: 600000, minInvestment: 200000 },
-  "British Columbia": { minNetWorth: 600000, minInvestment: 200000 },
-  Saskatchewan: { minNetWorth: 500000, minInvestment: 200000 },
-  Manitoba: { minNetWorth: 500000, minInvestment: 150000 },
-  Alberta: { minNetWorth: 300000, minInvestment: 100000 },
-};
+export interface EligibilityResult {
+  stream: PNPStreamRequirement;
+  eligible: boolean;
+  score: number;
+  missingCriteria: string[];
+}
 
-export function calculateEligibility(province: string, netWorth: number, investment: number): EligibilityResult {
-  const threshold = PROVINCIAL_THRESHOLDS[province] || { minNetWorth: 500000, minInvestment: 200000 };
-  const reasons: string[] = [];
+export function evaluatePNPEligibility(profile: ApplicantProfile): EligibilityResult[] {
+  return PNP_STREAMS.map((stream) => {
+    const missing: string[] = [];
+    let score = 0;
 
-  if (netWorth < threshold.minNetWorth) {
-    reasons.push(`Net worth below $${threshold.minNetWorth.toLocaleString()} CAD minimum`);
-  }
-  if (investment < threshold.minInvestment) {
-    reasons.push(`Investment below $${threshold.minInvestment.toLocaleString()} CAD minimum`);
-  }
+    if (profile.netWorthCAD < stream.minNetWorthCAD) {
+      missing.push(`Net worth below minimum ($${stream.minNetWorthCAD.toLocaleString()} CAD)`);
+    } else {
+      score += 25;
+    }
 
-  const isEligible = reasons.length === 0;
-  const suggestedAlternatives: string[] = [];
+    if (profile.investmentFundsCAD < stream.minInvestmentCAD) {
+      missing.push(`Investment capital below minimum ($${stream.minInvestmentCAD.toLocaleString()} CAD)`);
+    } else {
+      score += 35;
+    }
 
-  if (!isEligible) {
-    Object.entries(PROVINCIAL_THRESHOLDS).forEach(([altProvince, altThreshold]) => {
-      if (altProvince !== province) {
-        if (netWorth >= altThreshold.minNetWorth && investment >= altThreshold.minInvestment) {
-          suggestedAlternatives.push(altProvince);
-        }
-      }
-    });
-  }
+    const matchesSector = profile.preferredSectors.some((sector) =>
+      stream.prioritySectors.includes(sector)
+    );
+    if (matchesSector) score += 15;
 
-  return {
-    isEligible,
-    minNetWorth: threshold.minNetWorth,
-    minInvestment: threshold.minInvestment,
-    reasons,
-    suggestedAlternatives,
-  };
+    if (profile.managementExperienceYears >= 3) score += 15;
+    if (profile.languageLevelCLB >= 4) score += 10;
+
+    return {
+      stream,
+      eligible: missing.length === 0,
+      score,
+      missingCriteria: missing
+    };
+  });
 }
