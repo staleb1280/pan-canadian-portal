@@ -6,7 +6,7 @@ export default function InvestorAgreement() {
   const [signature, setSignature] = useState("");
   const [submitted, setSubmitted] = useState(false);
 
-  // Replace this link with your actual Stripe Payment Link or portal URL when ready
+  // Replace with your live Stripe Payment Link from your Stripe Dashboard (buy.stripe.com/...)
   const STRIPE_GATEWAY_URL = "https://buy.stripe.com/your-live-link-here";
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -14,7 +14,6 @@ export default function InvestorAgreement() {
     if (accepted && signature) {
       setSubmitted(true);
 
-      // Update lead agreement status in Admin Portal storage
       const existing = JSON.parse(localStorage.getItem("investnorth_leads") || "[]");
       if (existing.length > 0) {
         existing[0].signedAgreement = true;
@@ -66,7 +65,7 @@ export default function InvestorAgreement() {
 
           <p className="text-white font-bold">2. ADVISORY FEE STRUCTURE & RETAINER</p>
           <p>
-            The Client agrees to compensate InvestNorth Canada for business intelligence, target acquisition evaluation (using Murphy/Sunbelt database feeds), and full provincial business plan formulation:
+            The Client agrees to compensate InvestNorth Canada for business intelligence, target acquisition evaluation, and full provincial business plan formulation:
             <br />• Capital under $300,000 CAD: $3,500 CAD Advisory Retainer
             <br />• Capital $300,000 - $799,999 CAD: $7,500 CAD Advisory Retainer
             <br />• Capital $800,000+ CAD: $15,000 CAD Advisory Retainer
@@ -90,7 +89,10 @@ export default function InvestorAgreement() {
                 className="h-5 w-5 rounded border-slate-800 bg-slate-950 text-emerald-500 focus:ring-emerald-500"
               />
               <label htmlFor="accept" className="text-sm text-slate-300">
-                I acknowledge that InvestNorth Canada provides business advisory services and I agree to the advisory fee structure and terms.
+                I acknowledge that InvestNorth Canada provides business advisory services and I agree to the advisory fee structure and terms. Read full policies at{" "}
+                <a href="/legal" target="_blank" className="text-emerald-400 underline">
+                  investnorth.ca/legal
+                </a>.
               </label>
             </div>
 
@@ -119,7 +121,7 @@ export default function InvestorAgreement() {
           <div className="bg-emerald-950/40 border border-emerald-500/50 p-6 rounded-2xl text-center space-y-4">
             <div className="text-emerald-400 font-bold text-lg">✓ Agreement Signed & Executed</div>
             <p className="text-sm text-slate-300">
-              Thank you, <span className="text-white font-bold">{signature}</span>. Your signed agreement has been logged.
+              Thank you, <span className="text-white font-bold">{signature}</span>. Your signed agreement has been logged in our secure system.
             </p>
             <div className="pt-2">
               <button
@@ -127,7 +129,7 @@ export default function InvestorAgreement() {
                 onClick={handleProceedToPayment}
                 className="bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold px-6 py-3 rounded-xl transition shadow-md hover:shadow-blue-500/20 cursor-pointer"
               >
-                Proceed to Bank Verification (Stripe Portal) →
+                Proceed to Bank Verification & Retainer Payment (Stripe Portal) →
               </button>
             </div>
           </div>

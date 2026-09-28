@@ -54,7 +54,6 @@ const MUNICIPAL_FRAMEWORK = [
 export default function Home() {
   return (
     <div className="min-h-screen bg-[#070B14] text-slate-100 relative overflow-hidden font-sans">
-      {/* Navigation Header */}
       <header className="border-b border-slate-800/80 bg-[#070B14]/80 backdrop-blur-md sticky top-0 z-50 px-6 py-4">
         <div className="max-w-7xl mx-auto flex justify-between items-center">
           <Logo />
@@ -75,9 +74,7 @@ export default function Home() {
         </div>
       </header>
 
-      {/* Main Content Sections */}
       <main className="relative z-10 space-y-12 pb-20">
-        {/* Hero Section */}
         <section className="pt-20 pb-12 px-6 max-w-7xl mx-auto text-center space-y-6">
           <div className="inline-flex items-center gap-2 bg-blue-950/80 border border-blue-800/60 px-4 py-1.5 rounded-full text-xs font-bold text-blue-400">
             <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
@@ -105,19 +102,11 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Regulatory Scope Notice */}
         <ScopeNotice />
-
-        {/* Why Invest in Canada */}
         <WhyCanada />
-
-        {/* Provincial Streams Overview */}
         <ProvincialShowcase />
-
-        {/* Virtual Location & Video Tour Showcase */}
         <LocationShowcase />
 
-        {/* Municipal Approval & Support Letter Presentation Framework */}
         <section id="municipal-framework" className="py-16 px-6 max-w-7xl mx-auto">
           <div className="bg-slate-900/90 border border-slate-800 rounded-3xl p-8 md:p-12 shadow-2xl space-y-10 relative overflow-hidden">
             <div className="absolute top-0 right-0 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl pointer-events-none" />
@@ -134,7 +123,6 @@ export default function Home() {
               </p>
             </div>
 
-            {/* 6-Part Framework Grid */}
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
               {MUNICIPAL_FRAMEWORK.map((item) => (
                 <div
@@ -155,7 +143,6 @@ export default function Home() {
               ))}
             </div>
 
-            {/* Municipal Pitch & Support Letter Template Box */}
             <div className="bg-slate-950 border border-slate-800 rounded-2xl p-6 md:p-8 space-y-4">
               <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-slate-800 pb-4">
                 <div>
@@ -196,15 +183,20 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Qualification Wizard */}
         <IntakeWizard />
-
-        {/* Legal Agreement Section */}
         <InvestorAgreement />
       </main>
 
-      {/* Simple Footer */}
-      <footer className="border-t border-slate-800/80 bg-[#070B14] py-8 text-center text-xs text-slate-500">
+      <footer className="border-t border-slate-800/80 bg-[#070B14] py-8 text-center text-xs text-slate-500 space-y-2">
+        <div className="flex justify-center gap-6 text-slate-400 font-semibold mb-2">
+          <a href="/legal" className="hover:text-emerald-400 transition">
+            Terms of Service & Privacy Policy
+          </a>
+          <span>•</span>
+          <a href="/admin" className="hover:text-emerald-400 transition">
+            Law Firm Portal
+          </a>
+        </div>
         <p>© {new Date().getFullYear()} InvestNorth Canada Business Advisory & Intelligence. All rights reserved.</p>
       </footer>
     </div>
