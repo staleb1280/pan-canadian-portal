@@ -1,228 +1,334 @@
 "use client";
+
 import { useState } from "react";
-import { evaluatePNPEligibility, EligibilityResult } from "../../lib/pnpScoring";
+import { evaluatePNPEligibility } from "../../lib/pnpScoring";
 import { NET_WORTH_OPTIONS, INVESTMENT_FUNDS_OPTIONS } from "../../lib/pnp-config";
 
+// --- Dynamic Eligibility & Recommendation Logic ---
+interface InvestorEligibilityResult {
+  isEligible: boolean;
+  recommendations: string[];
+  unlockedOptions: string[];
+}
+
+function evaluateInvestorEligibility(
+  capitalAmount: number,
+  targetRegion: string
+): InvestorEligibilityResult {
+  // Check if chosen region contains major metropolitan hubs
+  const isMetro = ["Calgary", "Edmonton", "Vancouver", "Toronto"].some((city) =>
+    targetRegion.toLowerCase().includes(city.toLowerCase())
+  );
+
+  const recommendations: string[] = [];
+  const unlockedOptions: string[] = [];
+
+  if (isMetro && capitalAmount < 350000) {
+    recommendations.push(
+      `Top-up capital commitment to $350,000+ CAD to meet commercial lease and operational scale requirements in ${targetRegion}.`
+    );
+    recommendations.push(
+      `Pivot destination to a Regional Corridor (e.g., Taber, Lethbridge, or Regional ON/BC) where $${capitalAmount.toLocaleString()} CAD fully satisfies PNP & Rural Renewal criteria.`
+    );
+    recommendations.push(
+      `Leverage C11 Significant Benefit stream utilizing InvestNorth's 70%+ local supply chain integration model.`
+    );
+  } else {
+    unlockedOptions.push(
+      `Full eligibility for major metropolitan business acquisition and establishment.`
+    );
+    unlockedOptions.push(
+      `High priority ranking for Provincial Nominee Program (PNP) draws.`
+    );
+  }
+
+  if (capitalAmount >= 500000) {
+    unlockedOptions.push(
+      `Eligible for multi-location corporate expansion and turn-key commercial site acquisition.`
+    );
+  }
+
+  return {
+    isEligible: !isMetro || capitalAmount >= 350000,
+    recommendations,
+    unlockedOptions,
+  };
+}
+
+// Price Helper
+function getServicePrice(service: string): string {
+  if (service.includes("2,500") || service.includes("Site Match")) return "$2,500 CAD";
+  if (service.includes("5,500") || service.includes("Turnkey")) return "$5,500 CAD";
+  return "$3,200 CAD";
+}
+
 export default function IntakeWizard() {
-  const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({
-    fullName: "",
-    email: "",
-    netWorthCAD: 300000,
-    investmentFundsCAD: 100000,
-    preferredSectors: ["Agri-Tech"],
-    managementExperienceYears: 3,
-    languageLevelCLB: 5,
+    lawyerName: "",
+    lawFirm: "",
+    lawyerEmail: "",
+    lawyerPhone: "",
+    clientFileId: "",
+    targetRegion: "Alberta (Taber, Lethbridge, Calgary Region)",
+    serviceRequested: "Full EDO Business Plan Package ($3,200 CAD)",
+    capitalAmount: 200000,
   });
 
-  const [results, setResults] = useState<EligibilityResult[] | null>(null);
+  const [submitted, setSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleCalculate = (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const evaluation = evaluatePNPEligibility(formData);
-    setResults(evaluation);
-    setStep(3);
+    setIsSubmitting(true);
 
-    // Save lead submission to LocalStorage for Admin Portal display
-    const newLead = {
-      id: "lead-" + Date.now(),
-      ...formData,
-      date: new Date().toLocaleDateString(),
-      status: "Audit Completed",
-      signedAgreement: false,
-    };
-
-    const existing = JSON.parse(localStorage.getItem("investnorth_leads") || "[]");
-    localStorage.setItem("investnorth_leads", JSON.stringify([newLead, ...existing]));
+    // Simulate quick form submission processing
+    setTimeout(() => {
+      setIsSubmitting(false);
+      setSubmitted(true);
+    }, 600);
   };
 
-  return (
-    <section id="wizard" className="py-16 px-6 max-w-4xl mx-auto">
-      <div className="bg-slate-900 border border-slate-800 rounded-3xl p-8 md:p-12 shadow-2xl relative">
-        <div className="flex justify-between items-center mb-8 pb-4 border-b border-slate-800">
-          <div>
-            <span className="text-emerald-400 text-xs font-bold uppercase tracking-wider">
-              Step {step} of 3
-            </span>
-            <h3 className="text-2xl font-bold text-white mt-1">
-              {step === 1 && "Investor Qualification Audit"}
-              {step === 2 && "Financial & Operational Profile"}
-              {step === 3 && "Eligibility Analysis & Pathways"}
-            </h3>
-          </div>
-        </div>
+  const handleReset = () => {
+    setSubmitted(false);
+    setFormData({
+      lawyerName: "",
+      lawFirm: "",
+      lawyerEmail: "",
+      lawyerPhone: "",
+      clientFileId: "",
+      targetRegion: "Alberta (Taber, Lethbridge, Calgary Region)",
+      serviceRequested: "Full EDO Business Plan Package ($3,200 CAD)",
+      capitalAmount: 200000,
+    });
+  };
 
-        {step === 1 && (
-          <div className="space-y-6">
-            <div className="grid md:grid-cols-2 gap-6">
-              <div>
-                <label className="block text-xs font-bold uppercase text-slate-400 mb-2">
-                  Full Name
-                </label>
-                <input
-                  type="text"
-                  placeholder="e.g. Alexander Vance"
-                  value={formData.fullName}
-                  onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
-                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-emerald-500"
-                />
-              </div>
-              <div>
-                <label className="block text-xs font-bold uppercase text-slate-400 mb-2">
-                  Email Address
-                </label>
-                <input
-                  type="email"
-                  placeholder="vance@globalcapital.com"
-                  value={formData.email}
-                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-emerald-500"
-                />
-              </div>
+  const eligibility = evaluateInvestorEligibility(
+    formData.capitalAmount,
+    formData.targetRegion
+  );
+
+  return (
+    <div className="w-full max-w-4xl mx-auto my-8 p-6 bg-[#0B132B] text-slate-100 rounded-2xl border border-slate-800 shadow-2xl">
+      {!submitted ? (
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div>
+            <h2 className="text-2xl font-bold tracking-tight text-white mb-1">
+              Lawyer / RCIC Client File Submission Form
+            </h2>
+            <p className="text-sm text-slate-400">
+              Submit confidential client parameters to receive a wholesale B2B quote and scope brief within 24 hours.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* LAWYER / RCIC NAME */}
+            <div>
+              <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">
+                LAWYER / RCIC NAME
+              </label>
+              <input
+                type="text"
+                required
+                placeholder="e.g. David Sterling, Barrister"
+                value={formData.lawyerName}
+                onChange={(e) => setFormData({ ...formData, lawyerName: e.target.value })}
+                className="w-full px-4 py-3 bg-[#111C38] border border-slate-700/60 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 transition"
+              />
             </div>
-            <button
-              onClick={() => setStep(2)}
-              disabled={!formData.fullName || !formData.email}
-              className="w-full bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 text-white font-bold py-3.5 rounded-xl transition cursor-pointer"
+
+            {/* LAW FIRM / PRACTICE NAME */}
+            <div>
+              <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">
+                LAW FIRM / PRACTICE NAME
+              </label>
+              <input
+                type="text"
+                required
+                placeholder="e.g. Sterling Immigration Legal Group"
+                value={formData.lawFirm}
+                onChange={(e) => setFormData({ ...formData, lawFirm: e.target.value })}
+                className="w-full px-4 py-3 bg-[#111C38] border border-slate-700/60 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 transition"
+              />
+            </div>
+
+            {/* LAWYER EMAIL */}
+            <div>
+              <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">
+                LAWYER EMAIL
+              </label>
+              <input
+                type="email"
+                required
+                placeholder="dsterling@sterlinglaw.ca"
+                value={formData.lawyerEmail}
+                onChange={(e) => setFormData({ ...formData, lawyerEmail: e.target.value })}
+                className="w-full px-4 py-3 bg-[#111C38] border border-slate-700/60 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 transition"
+              />
+            </div>
+
+            {/* LAWYER PHONE NUMBER */}
+            <div>
+              <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">
+                LAWYER PHONE NUMBER
+              </label>
+              <input
+                type="text"
+                placeholder="+1 (403) 555-0188"
+                value={formData.lawyerPhone}
+                onChange={(e) => setFormData({ ...formData, lawyerPhone: e.target.value })}
+                className="w-full px-4 py-3 bg-[#111C38] border border-slate-700/60 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 transition"
+              />
+            </div>
+
+            {/* INVESTOR CLIENT FULL NAME OR FILE ID */}
+            <div>
+              <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">
+                INVESTOR CLIENT FULL NAME OR FILE ID
+              </label>
+              <input
+                type="text"
+                required
+                placeholder="e.g. Client File #INV-8820 (or Client Name)"
+                value={formData.clientFileId}
+                onChange={(e) => setFormData({ ...formData, clientFileId: e.target.value })}
+                className="w-full px-4 py-3 bg-[#111C38] border border-slate-700/60 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 transition"
+              />
+            </div>
+
+            {/* TARGET PROVINCE / REGION */}
+            <div>
+              <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">
+                TARGET PROVINCE / REGION
+              </label>
+              <select
+                value={formData.targetRegion}
+                onChange={(e) => setFormData({ ...formData, targetRegion: e.target.value })}
+                className="w-full px-4 py-3 bg-[#111C38] border border-slate-700/60 rounded-xl text-white focus:outline-none focus:border-blue-500 transition"
+              >
+                <option value="Alberta (Taber, Lethbridge, Calgary Region)">
+                  Alberta (Taber, Lethbridge, Calgary Region)
+                </option>
+                <option value="British Columbia (Okanagan, Vernon, Vancouver)">
+                  British Columbia (Okanagan, Vernon, Vancouver)
+                </option>
+                <option value="Saskatchewan (Regina, Regional Corridors)">
+                  Saskatchewan (Regina, Regional Corridors)
+                </option>
+                <option value="Manitoba (Winnipeg, Brandon Region)">
+                  Manitoba (Winnipeg, Brandon Region)
+                </option>
+                <option value="Ontario (Regional Ontario Corridors)">
+                  Ontario (Regional Ontario Corridors)
+                </option>
+              </select>
+            </div>
+          </div>
+
+          {/* DELIVERABLE SERVICE REQUESTED */}
+          <div>
+            <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">
+              DELIVERABLE SERVICE REQUESTED
+            </label>
+            <select
+              value={formData.serviceRequested}
+              onChange={(e) => setFormData({ ...formData, serviceRequested: e.target.value })}
+              className="w-full px-4 py-3 bg-[#111C38] border border-slate-700/60 rounded-xl text-white focus:outline-none focus:border-blue-500 transition"
             >
-              Continue to Financial Assessment →
+              <option value="Full EDO Business Plan Package ($3,200 CAD)">
+                Full EDO Business Plan Package ($3,200 CAD)
+              </option>
+              <option value="Site Match & Feasibility Audit ($2,500 CAD)">
+                Site Match & Feasibility Audit ($2,500 CAD)
+              </option>
+              <option value="Turnkey Expansion Bundle ($5,500 CAD)">
+                Turnkey Expansion Bundle ($5,500 CAD)
+              </option>
+            </select>
+          </div>
+
+          {/* DYNAMIC ADVISORY & RECOMMENDATION CARD */}
+          {formData.targetRegion && (
+            <div
+              className={`p-5 rounded-xl border transition ${
+                eligibility.isEligible
+                  ? "bg-emerald-950/20 border-emerald-500/40 text-emerald-200"
+                  : "bg-amber-950/20 border-amber-500/40 text-amber-200"
+              }`}
+            >
+              <div className="flex items-center gap-2 font-semibold text-base mb-2">
+                {eligibility.isEligible
+                  ? "✅ Destination & Capital Baseline Aligned"
+                  : "⚠️ Regional Eligibility Gap Identified"}
+              </div>
+
+              {!eligibility.isEligible ? (
+                <div>
+                  <p className="text-xs text-amber-300 mb-3">
+                    Your selected region ({formData.targetRegion}) typically requires a higher capital baseline or strategic modifications. Recommended solutions:
+                  </p>
+                  <ul className="space-y-1.5 text-xs list-disc pl-4 text-amber-100">
+                    {eligibility.recommendations.map((rec, idx) => (
+                      <li key={idx}>{rec}</li>
+                    ))}
+                  </ul>
+                </div>
+              ) : (
+                <ul className="space-y-1 text-xs list-disc pl-4 text-emerald-100">
+                  {eligibility.unlockedOptions.map((opt, idx) => (
+                    <li key={idx}>{opt}</li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          )}
+
+          {/* SUBMIT BUTTON */}
+          <button
+            type="submit"
+            disabled={isSubmitting}
+            className="w-full py-4 bg-blue-600 hover:bg-blue-500 active:bg-blue-700 text-white font-semibold text-sm rounded-xl transition shadow-lg shadow-blue-600/20"
+          >
+            {isSubmitting
+              ? "Processing Submission..."
+              : "Submit Client File & Receive B2B Invoice / Scope Brief →"}
+          </button>
+        </form>
+      ) : (
+        /* SUCCESS CONFIRMATION SCREEN */
+        <div className="p-8 my-4 rounded-xl border border-emerald-500/40 bg-emerald-950/20 text-center space-y-4">
+          <h3 className="text-2xl font-bold text-emerald-400 flex items-center justify-center gap-2">
+            ✓ B2B Client File Submitted Successfully
+          </h3>
+
+          <p className="text-sm text-slate-300">
+            Thank you, <span className="font-semibold text-emerald-300">{formData.lawyerName}</span> (
+            <span className="text-emerald-300">{formData.lawFirm}</span>).
+          </p>
+
+          <p className="text-xs text-slate-400">
+            Client File: <span className="font-mono text-white font-semibold">{formData.clientFileId}</span> | Service:{" "}
+            <span className="font-semibold text-white">{formData.serviceRequested}</span>
+          </p>
+
+          <div className="py-2 px-4 bg-emerald-900/40 border border-emerald-500/30 rounded-lg inline-block text-emerald-300 font-mono font-bold text-sm">
+            B2B Fee Quote: {getServicePrice(formData.serviceRequested)} (Wholesale B2B Rate)
+          </div>
+
+          <p className="text-xs text-slate-400 max-w-lg mx-auto">
+            Our business advisory team will review the parameters and send the formal engagement agreement & invoice to{" "}
+            <span className="text-white font-semibold">{formData.lawyerEmail}</span> within 24 hours.
+          </p>
+
+          <div className="pt-4">
+            <button
+              onClick={handleReset}
+              className="px-6 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold rounded-lg border border-slate-700 transition"
+            >
+              + Submit Another Client File
             </button>
           </div>
-        )}
-
-        {step === 2 && (
-          <form onSubmit={handleCalculate} className="space-y-6">
-            <div className="grid md:grid-cols-2 gap-6">
-              <div>
-                <label className="block text-xs font-bold uppercase text-slate-400 mb-2">
-                  Total Personal Net Worth (CAD)
-                </label>
-                <select
-                  value={formData.netWorthCAD}
-                  onChange={(e) => setFormData({ ...formData, netWorthCAD: Number(e.target.value) })}
-                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-emerald-500"
-                >
-                  {NET_WORTH_OPTIONS.map((opt) => (
-                    <option key={opt.value} value={opt.value}>{opt.label}</option>
-                  ))}
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold uppercase text-slate-400 mb-2">
-                  Liquid Investment Capital (CAD)
-                </label>
-                <select
-                  value={formData.investmentFundsCAD}
-                  onChange={(e) => setFormData({ ...formData, investmentFundsCAD: Number(e.target.value) })}
-                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-emerald-500"
-                >
-                  {INVESTMENT_FUNDS_OPTIONS.map((opt) => (
-                    <option key={opt.value} value={opt.value}>{opt.label}</option>
-                  ))}
-                </select>
-              </div>
-            </div>
-
-            <div className="grid md:grid-cols-2 gap-6">
-              <div>
-                <label className="block text-xs font-bold uppercase text-slate-400 mb-2">
-                  Management Experience
-                </label>
-                <select
-                  value={formData.managementExperienceYears}
-                  onChange={(e) => setFormData({ ...formData, managementExperienceYears: Number(e.target.value) })}
-                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-emerald-500"
-                >
-                  <option value={1}>1-2 Years (Owner/Senior Mgr)</option>
-                  <option value={3}>3-5 Years (Owner/Senior Mgr)</option>
-                  <option value={5}>5+ Years (Owner/Senior Mgr)</option>
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold uppercase text-slate-400 mb-2">
-                  Language Proficiency (CLB)
-                </label>
-                <select
-                  value={formData.languageLevelCLB}
-                  onChange={(e) => setFormData({ ...formData, languageLevelCLB: Number(e.target.value) })}
-                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-emerald-500"
-                >
-                  <option value={4}>CLB 4 (Basic Requirement)</option>
-                  <option value={5}>CLB 5 (Intermediate)</option>
-                  <option value={7}>CLB 7+ (Fluent / Advanced)</option>
-                </select>
-              </div>
-            </div>
-
-            <div className="flex gap-4">
-              <button
-                type="button"
-                onClick={() => setStep(1)}
-                className="w-1/3 bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold py-3.5 rounded-xl transition cursor-pointer"
-              >
-                ← Back
-              </button>
-              <button
-                type="submit"
-                className="w-2/3 bg-gradient-to-r from-blue-600 to-emerald-600 hover:from-blue-500 hover:to-emerald-500 text-white font-bold py-3.5 rounded-xl transition shadow-lg cursor-pointer"
-              >
-                Generate Custom Pathway Report →
-              </button>
-            </div>
-          </form>
-        )}
-
-        {step === 3 && results && (
-          <div className="space-y-6">
-            <h4 className="text-xl font-bold text-white">Your Provincial Compatibility Results</h4>
-            <div className="space-y-4">
-              {results.map((res, i) => (
-                <div
-                  key={i}
-                  className={`p-5 rounded-2xl border ${
-                    res.eligible
-                      ? "bg-emerald-950/20 border-emerald-500/50"
-                      : "bg-slate-950 border-slate-800"
-                  }`}
-                >
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <span className="text-xs font-bold text-slate-400">{res.stream.province}</span>
-                      <h5 className="text-lg font-bold text-white">{res.stream.name}</h5>
-                    </div>
-                    <span
-                      className={`px-3 py-1 rounded-full text-xs font-bold ${
-                        res.eligible ? "bg-emerald-500/20 text-emerald-400" : "bg-slate-800 text-slate-400"
-                      }`}
-                    >
-                      {res.eligible ? "Eligible Target" : "Capital Deficit"}
-                    </span>
-                  </div>
-                  {res.missingCriteria.length > 0 && (
-                    <p className="text-xs text-rose-400 mt-2">
-                      Notice: {res.missingCriteria.join(", ")}
-                    </p>
-                  )}
-                </div>
-              ))}
-            </div>
-
-            <div className="pt-6 border-t border-slate-800 text-center space-y-4">
-              <p className="text-sm text-slate-300">
-                To proceed with business matching, bespoke opportunity reporting, and complete business plan preparation, sign the Advisory Agreement below.
-              </p>
-              <a
-                href="#agreement"
-                className="inline-block bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold px-8 py-3.5 rounded-xl transition shadow-xl"
-              >
-                Proceed to Business Advisory Agreement & Retainer ↓
-              </a>
-            </div>
-          </div>
-        )}
-      </div>
-    </section>
+        </div>
+      )}
+    </div>
   );
 }
