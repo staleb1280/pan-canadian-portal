@@ -1,36 +1,12 @@
 ﻿"use client";
-import { useState, useEffect } from "react";
 import Logo from "../Components/Branding/Logo";
 import ScopeNotice from "../Components/Home/ScopeNotice";
 import WhyCanada from "../Components/Home/WhyCanada";
 import ProvincialShowcase from "../Components/Home/ProvincialShowcase";
 import LocationShowcase from "../Components/Home/LocationShowcase";
+import LawyerB2BPortal from "../Components/Home/LawyerB2BPortal";
 import IntakeWizard from "../Components/Wizard/IntakeWizard";
 import InvestorAgreement from "../Components/Legal/InvestorAgreement";
-
-// Admin & Partner Interface Types
-interface Lead {
-  id: string;
-  fullName: string;
-  email: string;
-  netWorthCAD: number;
-  investmentFundsCAD: number;
-  managementExperienceYears: number;
-  languageLevelCLB: number;
-  date: string;
-  status: string;
-  signedAgreement: boolean;
-  referredLawyer?: string;
-}
-
-interface PartnerLawyer {
-  id: string;
-  name: string;
-  firm: string;
-  email: string;
-  phone: string;
-  specialty: string;
-}
 
 const MUNICIPAL_FRAMEWORK = [
   {
@@ -72,75 +48,19 @@ const MUNICIPAL_FRAMEWORK = [
 ];
 
 export default function SinglePageHome() {
-  const [leads, setLeads] = useState<Lead[]>([]);
-  const [lawyers, setLawyers] = useState<PartnerLawyer[]>([
-    {
-      id: "law-1",
-      name: "Marcus Vance, Barrister & Solicitor",
-      firm: "Vance Canadian Immigration Law",
-      email: "mvance@vancelaw.ca",
-      phone: "+1 (403) 555-0192",
-      specialty: "Alberta & BC Provincial Nominee Streams",
-    },
-    {
-      id: "law-2",
-      name: "Elena Rostova, RCIC-IRB",
-      firm: "Northern Horizon Legal Advisory",
-      email: "elena@nhlegal.ca",
-      phone: "+1 (604) 555-0144",
-      specialty: "Regional Entrepreneur & Rural Pilot Streams",
-    },
-  ]);
-
-  const [newLawyer, setNewLawyer] = useState({
-    name: "",
-    firm: "",
-    email: "",
-    phone: "",
-    specialty: "",
-  });
-
-  useEffect(() => {
-    const savedLeads = JSON.parse(localStorage.getItem("investnorth_leads") || "[]");
-    setLeads(savedLeads);
-  }, []);
-
-  const handleAddLawyer = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!newLawyer.name || !newLawyer.email) return;
-    const lawyerEntry: PartnerLawyer = { id: "lawyer-" + Date.now(), ...newLawyer };
-    setLawyers([...lawyers, lawyerEntry]);
-    setNewLawyer({ name: "", firm: "", email: "", phone: "", specialty: "" });
-  };
-
-  const handleAssignLawyer = (leadId: string, lawyerName: string) => {
-    const updated = leads.map((lead) => {
-      if (lead.id === leadId) {
-        return {
-          ...lead,
-          referredLawyer: lawyerName,
-          status: `Referred to ${lawyerName.split(",")[0]}`,
-        };
-      }
-      return lead;
-    });
-    setLeads(updated);
-    localStorage.setItem("investnorth_leads", JSON.stringify(updated));
-  };
-
   return (
     <div className="min-h-screen bg-[#070B14] text-slate-100 relative overflow-hidden font-sans">
-      {/* Universal Sticky Header Navigation */}
+      {/* Sticky Header Navigation */}
       <header className="border-b border-slate-800/80 bg-[#070B14]/90 backdrop-blur-md sticky top-0 z-50 px-6 py-4">
         <div className="max-w-7xl mx-auto flex justify-between items-center">
           <Logo />
           <nav className="hidden md:flex items-center gap-6 text-xs font-semibold text-slate-300">
             <a href="#locations" className="hover:text-emerald-400 transition">Locations</a>
             <a href="#municipal-framework" className="hover:text-emerald-400 transition">EDO Framework</a>
+            <a href="#lawyer-b2b" className="hover:text-emerald-400 transition">Lawyer B2B Hub</a>
             <a href="#wizard" className="hover:text-emerald-400 transition">Audit Wizard</a>
             <a href="#agreement" className="hover:text-emerald-400 transition">Agreement</a>
             <a href="#legal-section" className="hover:text-emerald-400 transition">Legal Policy</a>
-            <a href="#admin-section" className="hover:text-emerald-400 transition">Admin Portal</a>
           </nav>
           <a
             href="#wizard"
@@ -172,10 +92,10 @@ export default function SinglePageHome() {
               Evaluate Investor Eligibility ↓
             </a>
             <a
-              href="#locations"
-              className="bg-slate-900 hover:bg-slate-800 border border-slate-800 text-white font-bold px-8 py-3.5 rounded-xl transition text-xs"
+              href="#lawyer-b2b"
+              className="bg-blue-600 hover:bg-blue-500 text-white font-bold px-8 py-3.5 rounded-xl transition text-xs shadow-lg"
             >
-              Explore Business Sites Map →
+              Immigration Lawyer B2B Portal →
             </a>
           </div>
         </section>
@@ -228,17 +148,22 @@ export default function SinglePageHome() {
           </div>
         </section>
 
-        {/* 3. Intake Wizard Section */}
+        {/* 3. Lawyer B2B Portal Section */}
+        <div id="lawyer-b2b">
+          <LawyerB2BPortal />
+        </div>
+
+        {/* 4. Intake Wizard Section */}
         <div id="wizard">
           <IntakeWizard />
         </div>
 
-        {/* 4. Investor Engagement Agreement Section */}
+        {/* 5. Investor Engagement Agreement Section */}
         <div id="agreement">
           <InvestorAgreement />
         </div>
 
-        {/* 5. Embedded Legal Policy Section */}
+        {/* 6. Embedded Legal Policy Section */}
         <section id="legal-section" className="py-12 px-6 max-w-7xl mx-auto">
           <div className="bg-slate-900/90 border border-slate-800 rounded-3xl p-8 md:p-12 space-y-8 shadow-2xl">
             <div>
@@ -271,128 +196,6 @@ export default function SinglePageHome() {
             </div>
           </div>
         </section>
-
-        {/* 6. Embedded Admin & Legal Partner Hub Section */}
-        <section id="admin-section" className="py-12 px-6 max-w-7xl mx-auto space-y-8">
-          <div className="bg-slate-900/90 border border-slate-800 rounded-3xl p-8 shadow-2xl space-y-6">
-            <div className="flex justify-between items-center">
-              <div>
-                <span className="text-xs font-bold uppercase tracking-widest text-blue-400">
-                  Internal Operations & Referral Hub
-                </span>
-                <h2 className="text-2xl font-bold text-white">Investor Leads & Partner Law Firm Assignments</h2>
-              </div>
-              <span className="text-xs bg-emerald-950 text-emerald-400 border border-emerald-800 px-3 py-1 rounded-full font-bold">
-                ● Live Admin Section
-              </span>
-            </div>
-
-            {/* Lead Tracking Table */}
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs text-slate-300">
-                <thead className="bg-slate-950 text-slate-400 uppercase font-mono border-b border-slate-800">
-                  <tr>
-                    <th className="p-3">Applicant Name</th>
-                    <th className="p-3">Contact</th>
-                    <th className="p-3">Liquid Capital</th>
-                    <th className="p-3">Agreement</th>
-                    <th className="p-3">Status</th>
-                    <th className="p-3">Assign Law Firm Partner</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-800">
-                  {leads.length === 0 ? (
-                    <tr>
-                      <td colSpan={6} className="p-4 text-center text-slate-500 font-mono">
-                        No leads logged yet. Complete the Intake Wizard above to populate this live feed.
-                      </td>
-                    </tr>
-                  ) : (
-                    leads.map((lead) => (
-                      <tr key={lead.id} className="hover:bg-slate-950/50 transition">
-                        <td className="p-3 font-bold text-white">{lead.fullName || "N/A"}</td>
-                        <td className="p-3 text-slate-400">{lead.email}</td>
-                        <td className="p-3 text-emerald-400 font-mono">
-                          ${lead.investmentFundsCAD ? lead.investmentFundsCAD.toLocaleString() : "0"} CAD
-                        </td>
-                        <td className="p-3">
-                          <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${lead.signedAgreement ? "bg-emerald-950 text-emerald-400" : "bg-slate-800 text-slate-400"}`}>
-                            {lead.signedAgreement ? "Signed" : "Pending"}
-                          </span>
-                        </td>
-                        <td className="p-3 text-slate-300">{lead.status}</td>
-                        <td className="p-3">
-                          <select
-                            value={lead.referredLawyer || ""}
-                            onChange={(e) => handleAssignLawyer(lead.id, e.target.value)}
-                            className="bg-slate-950 border border-slate-800 rounded px-2 py-1 text-xs text-slate-300 focus:outline-none focus:border-emerald-500"
-                          >
-                            <option value="">Select Immigration Legal Partner...</option>
-                            {lawyers.map((law) => (
-                              <option key={law.id} value={law.name}>
-                                {law.name} ({law.firm})
-                              </option>
-                            ))}
-                          </select>
-                        </td>
-                      </tr>
-                    ))
-                  )}
-                </tbody>
-              </table>
-            </div>
-
-            {/* Partner Lawyers Grid & Registration */}
-            <div className="grid lg:grid-cols-12 gap-6 pt-4 border-t border-slate-800">
-              <div className="lg:col-span-7 space-y-3">
-                <h3 className="text-sm font-bold text-white">Registered Legal Partners</h3>
-                <div className="grid sm:grid-cols-2 gap-3">
-                  {lawyers.map((law) => (
-                    <div key={law.id} className="bg-slate-950 border border-slate-800 p-4 rounded-xl space-y-1 text-xs">
-                      <div className="font-bold text-white">{law.name}</div>
-                      <div className="text-emerald-400 text-[11px]">{law.firm}</div>
-                      <div className="text-slate-400 text-[10px]">📧 {law.email}</div>
-                      <div className="text-slate-400 text-[10px]">🎯 {law.specialty}</div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              <div className="lg:col-span-5 bg-slate-950 p-4 rounded-2xl border border-slate-800 space-y-3">
-                <h3 className="text-sm font-bold text-white">+ Add Legal Partner</h3>
-                <form onSubmit={handleAddLawyer} className="space-y-2 text-xs">
-                  <input
-                    type="text"
-                    placeholder="Lawyer Name & Designation"
-                    value={newLawyer.name}
-                    onChange={(e) => setNewLawyer({ ...newLawyer, name: e.target.value })}
-                    className="w-full bg-slate-900 border border-slate-800 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-emerald-500"
-                  />
-                  <input
-                    type="text"
-                    placeholder="Law Firm Name"
-                    value={newLawyer.firm}
-                    onChange={(e) => setNewLawyer({ ...newLawyer, firm: e.target.value })}
-                    className="w-full bg-slate-900 border border-slate-800 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-emerald-500"
-                  />
-                  <input
-                    type="email"
-                    placeholder="Partner Email Address"
-                    value={newLawyer.email}
-                    onChange={(e) => setNewLawyer({ ...newLawyer, email: e.target.value })}
-                    className="w-full bg-slate-900 border border-slate-800 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-emerald-500"
-                  />
-                  <button
-                    type="submit"
-                    className="w-full bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold py-2 rounded-lg transition"
-                  >
-                    Register Legal Partner
-                  </button>
-                </form>
-              </div>
-            </div>
-          </div>
-        </section>
       </main>
 
       {/* Footer Navigation */}
@@ -402,8 +205,8 @@ export default function SinglePageHome() {
             Terms of Service & Privacy Policy
           </a>
           <span>•</span>
-          <a href="#admin-section" className="hover:text-emerald-400 transition">
-            Law Firm Referral Hub
+          <a href="/admin" className="hover:text-emerald-400 transition">
+            Executive Partner Access
           </a>
         </div>
         <p>© {new Date().getFullYear()} InvestNorth Canada Business Advisory & Intelligence. All rights reserved.</p>
