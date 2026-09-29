@@ -1,59 +1,183 @@
 "use client";
 
 import { useState } from "react";
-import { evaluatePNPEligibility } from "../../lib/pnpScoring";
-import { NET_WORTH_OPTIONS, INVESTMENT_FUNDS_OPTIONS } from "../../lib/pnp-config";
 
-// --- Dynamic Eligibility & Recommendation Logic ---
-interface InvestorEligibilityResult {
-  isEligible: boolean;
-  recommendations: string[];
-  unlockedOptions: string[];
+// --- PROVINCIAL CORRIDOR RANKING DATA ---
+export interface LocationCorridor {
+  id: string;
+  name: string;
+  rankBadge: string;
+  minCapitalCAD: number;
+  edoSupportLevel: "Very High" | "High" | "Moderate";
+  recommendedStream: string;
+  description: string;
 }
 
-function evaluateInvestorEligibility(
-  capitalAmount: number,
-  targetRegion: string
-): InvestorEligibilityResult {
-  // Check if chosen region contains major metropolitan hubs
-  const isMetro = ["Calgary", "Edmonton", "Vancouver", "Toronto"].some((city) =>
-    targetRegion.toLowerCase().includes(city.toLowerCase())
-  );
-
-  const recommendations: string[] = [];
-  const unlockedOptions: string[] = [];
-
-  if (isMetro && capitalAmount < 350000) {
-    recommendations.push(
-      `Top-up capital commitment to $350,000+ CAD to meet commercial lease and operational scale requirements in ${targetRegion}.`
-    );
-    recommendations.push(
-      `Pivot destination to a Regional Corridor (e.g., Taber, Lethbridge, or Regional ON/BC) where $${capitalAmount.toLocaleString()} CAD fully satisfies PNP & Rural Renewal criteria.`
-    );
-    recommendations.push(
-      `Leverage C11 Significant Benefit stream utilizing InvestNorth's 70%+ local supply chain integration model.`
-    );
-  } else {
-    unlockedOptions.push(
-      `Full eligibility for major metropolitan business acquisition and establishment.`
-    );
-    unlockedOptions.push(
-      `High priority ranking for Provincial Nominee Program (PNP) draws.`
-    );
-  }
-
-  if (capitalAmount >= 500000) {
-    unlockedOptions.push(
-      `Eligible for multi-location corporate expansion and turn-key commercial site acquisition.`
-    );
-  }
-
-  return {
-    isEligible: !isMetro || capitalAmount >= 350000,
-    recommendations,
-    unlockedOptions,
-  };
-}
+export const PROVINCE_CORRIDORS: Record<string, LocationCorridor[]> = {
+  Alberta: [
+    {
+      id: "ab-1",
+      name: "Taber / Lethbridge / Coaldale Corridor",
+      rankBadge: "⭐ #1 Best Opportunity (Top EDO & Rural Renewal Match)",
+      minCapitalCAD: 150000,
+      edoSupportLevel: "Very High",
+      recommendedStream: "Alberta Rural Renewal Stream & PNP Entrepreneur",
+      description: "Highest PNP points boost, 100% EDO endorsement, low lease overhead, strong agri-food & commercial demand.",
+    },
+    {
+      id: "ab-2",
+      name: "Brooks / Newell Region",
+      rankBadge: "🏅 #2 Recommended (Rural Renewal Stream)",
+      minCapitalCAD: 150000,
+      edoSupportLevel: "Very High",
+      recommendedStream: "Alberta Rural Renewal Stream",
+      description: "Fast-track community nomination, active local labour recruitment support.",
+    },
+    {
+      id: "ab-3",
+      name: "Red Deer & Central Alberta Corridor",
+      rankBadge: "🔹 #3 Secondary Regional Hub",
+      minCapitalCAD: 250000,
+      edoSupportLevel: "High",
+      recommendedStream: "Alberta Advantage Entrepreneur Stream",
+      description: "Strategic logistics hub between Edmonton and Calgary with strong commercial growth.",
+    },
+    {
+      id: "ab-4",
+      name: "Calgary Metropolitan Area",
+      rankBadge: "🏢 #4 Primary Metro (Higher Capital Baseline)",
+      minCapitalCAD: 350000,
+      edoSupportLevel: "Moderate",
+      recommendedStream: "C11 Significant Benefit / Direct Acquisition",
+      description: "High commercial visibility; requires $350k+ capital commitment due to lease costs and market density.",
+    },
+    {
+      id: "ab-5",
+      name: "Edmonton Metropolitan Region",
+      rankBadge: "🏢 #5 Metro Industrial & Commercial Core",
+      minCapitalCAD: 350000,
+      edoSupportLevel: "Moderate",
+      recommendedStream: "C11 Significant Benefit / Expansion",
+      description: "Ideal for manufacturing, transport, and commercial service ventures.",
+    },
+  ],
+  "British Columbia": [
+    {
+      id: "bc-1",
+      name: "Vernon / North Okanagan Corridor",
+      rankBadge: "⭐ #1 Best Opportunity (BC PNP Regional Pilot)",
+      minCapitalCAD: 100000,
+      edoSupportLevel: "Very High",
+      recommendedStream: "BC PNP Entrepreneur Immigration - Regional Stream",
+      description: "Unlocks lowest capital threshold in BC ($100k) with direct community referral.",
+    },
+    {
+      id: "bc-2",
+      name: "Kamloops & Thompson-Nicola Region",
+      rankBadge: "🏅 #2 High Priority Regional Hub",
+      minCapitalCAD: 150000,
+      edoSupportLevel: "High",
+      recommendedStream: "BC PNP Regional Stream",
+      description: "Strong forestry, tourism, and retail trade opportunities.",
+    },
+    {
+      id: "bc-3",
+      name: "Kelowna & Central Okanagan",
+      rankBadge: "🔹 #3 Commercial Tech & Tourism Hub",
+      minCapitalCAD: 300000,
+      edoSupportLevel: "High",
+      recommendedStream: "Standard BC PNP Entrepreneur",
+      description: "High-growth market; requires higher capital allocation.",
+    },
+    {
+      id: "bc-4",
+      name: "Metro Vancouver & Lower Mainland",
+      rankBadge: "🏢 #4 Major Metro (Tier 4 / Highly Competitive)",
+      minCapitalCAD: 500000,
+      edoSupportLevel: "Moderate",
+      recommendedStream: "C11 Significant Benefit / Corporate Expansion",
+      description: "Saturated market; requires $500k+ CAD and specialized business model to pass IRCC audit.",
+    },
+  ],
+  Saskatchewan: [
+    {
+      id: "sk-1",
+      name: "Moose Jaw & Regional Corridors",
+      rankBadge: "⭐ #1 Best Opportunity (SINP Regional Entrepreneur)",
+      minCapitalCAD: 200000,
+      edoSupportLevel: "Very High",
+      recommendedStream: "SINP Entrepreneur Category (Regional)",
+      description: "Lower score threshold for EOI selection; fast municipal onboarding.",
+    },
+    {
+      id: "sk-2",
+      name: "Saskatoon Regional Corridor",
+      rankBadge: "🏅 #2 Commercial Distribution Hub",
+      minCapitalCAD: 250000,
+      edoSupportLevel: "High",
+      recommendedStream: "SINP Entrepreneur Category",
+      description: "Strong tech, agriculture, and retail sector demand.",
+    },
+    {
+      id: "sk-3",
+      name: "Regina Metropolitan Area",
+      rankBadge: "🏢 #3 Provincial Capital Core",
+      minCapitalCAD: 300000,
+      edoSupportLevel: "Moderate",
+      recommendedStream: "SINP Entrepreneur Category",
+      description: "Government and commercial service centre.",
+    },
+  ],
+  Manitoba: [
+    {
+      id: "mb-1",
+      name: "Brandon & Westman Region",
+      rankBadge: "⭐ #1 Best Opportunity (MPNP Regional Priority)",
+      minCapitalCAD: 150000,
+      edoSupportLevel: "Very High",
+      recommendedStream: "MPNP Business Investor Stream (Regional)",
+      description: "Requires only $150k investment outside Winnipeg; maximum PNP points.",
+    },
+    {
+      id: "mb-2",
+      name: "Winnipeg Metropolitan Area",
+      rankBadge: "🏢 #2 Primary Metro Core",
+      minCapitalCAD: 250000,
+      edoSupportLevel: "Moderate",
+      recommendedStream: "MPNP Entrepreneur Pathway",
+      description: "Requires $250k investment minimum within Winnipeg city limits.",
+    },
+  ],
+  Ontario: [
+    {
+      id: "on-1",
+      name: "Chatham-Kent & Southwestern Ontario",
+      rankBadge: "⭐ #1 Best Opportunity (OINP Regional Focus)",
+      minCapitalCAD: 200000,
+      edoSupportLevel: "Very High",
+      recommendedStream: "OINP Entrepreneur Stream (Outside GTA)",
+      description: "Unlocks $200k investment baseline vs $600k in GTA; high manufacturing & agri-tech demand.",
+    },
+    {
+      id: "on-2",
+      name: "Kingston & Eastern Ontario Corridor",
+      rankBadge: "🏅 #2 High Priority Regional City",
+      minCapitalCAD: 250000,
+      edoSupportLevel: "High",
+      recommendedStream: "OINP Regional Stream",
+      description: "Strong healthcare, education, and service business demand.",
+    },
+    {
+      id: "on-3",
+      name: "Greater Toronto Area (GTA) & Ottawa",
+      rankBadge: "🏢 #3 Tier 4 Metro (Maximum Competition & Capital)",
+      minCapitalCAD: 600000,
+      edoSupportLevel: "Moderate",
+      recommendedStream: "C11 Corporate / OINP GTA ($600k Min)",
+      description: "Highest capital requirement in Canada ($600k+ CAD unencumbered investment).",
+    },
+  ],
+};
 
 // Price Helper
 function getServicePrice(service: string): string {
@@ -63,25 +187,44 @@ function getServicePrice(service: string): string {
 }
 
 export default function IntakeWizard() {
+  const [selectedProvince, setSelectedProvince] = useState<string>("Alberta");
+  
+  // Default to the #1 ranked location in Alberta
+  const [selectedCorridorId, setSelectedCorridorId] = useState<string>("ab-1");
+
   const [formData, setFormData] = useState({
     lawyerName: "",
     lawFirm: "",
     lawyerEmail: "",
     lawyerPhone: "",
     clientFileId: "",
-    targetRegion: "Alberta (Taber, Lethbridge, Calgary Region)",
-    serviceRequested: "Full EDO Business Plan Package ($3,200 CAD)",
     capitalAmount: 200000,
+    serviceRequested: "Full EDO Business Plan Package ($3,200 CAD)",
   });
 
   const [submitted, setSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  // Get corridors for current province
+  const currentCorridors = PROVINCE_CORRIDORS[selectedProvince] || [];
+
+  // Get active selected corridor details
+  const activeCorridor =
+    currentCorridors.find((c) => c.id === selectedCorridorId) || currentCorridors[0];
+
+  // Handle Province Change & auto-select top #1 location
+  const handleProvinceChange = (province: string) => {
+    setSelectedProvince(province);
+    const newCorridors = PROVINCE_CORRIDORS[province] || [];
+    if (newCorridors.length > 0) {
+      setSelectedCorridorId(newCorridors[0].id); // Auto select #1 option at top
+    }
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
 
-    // Simulate quick form submission processing
     setTimeout(() => {
       setIsSubmitting(false);
       setSubmitted(true);
@@ -90,22 +233,20 @@ export default function IntakeWizard() {
 
   const handleReset = () => {
     setSubmitted(false);
+    setSelectedProvince("Alberta");
+    setSelectedCorridorId("ab-1");
     setFormData({
       lawyerName: "",
       lawFirm: "",
       lawyerEmail: "",
       lawyerPhone: "",
       clientFileId: "",
-      targetRegion: "Alberta (Taber, Lethbridge, Calgary Region)",
-      serviceRequested: "Full EDO Business Plan Package ($3,200 CAD)",
       capitalAmount: 200000,
+      serviceRequested: "Full EDO Business Plan Package ($3,200 CAD)",
     });
   };
 
-  const eligibility = evaluateInvestorEligibility(
-    formData.capitalAmount,
-    formData.targetRegion
-  );
+  const isCapitalSufficient = formData.capitalAmount >= (activeCorridor?.minCapitalCAD || 200000);
 
   return (
     <div className="w-full max-w-4xl mx-auto my-8 p-6 bg-[#0B132B] text-slate-100 rounded-2xl border border-slate-800 shadow-2xl">
@@ -116,7 +257,7 @@ export default function IntakeWizard() {
               Lawyer / RCIC Client File Submission Form
             </h2>
             <p className="text-sm text-slate-400">
-              Submit confidential client parameters to receive a wholesale B2B quote and scope brief within 24 hours.
+              Select target province & ranked corridor to evaluate client eligibility and lock wholesale B2B pricing.
             </p>
           </div>
 
@@ -180,7 +321,7 @@ export default function IntakeWizard() {
               />
             </div>
 
-            {/* INVESTOR CLIENT FULL NAME OR FILE ID */}
+            {/* INVESTOR CLIENT FILE ID */}
             <div>
               <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">
                 INVESTOR CLIENT FULL NAME OR FILE ID
@@ -195,31 +336,61 @@ export default function IntakeWizard() {
               />
             </div>
 
-            {/* TARGET PROVINCE / REGION */}
+            {/* INVESTOR CAPITAL BASELINE */}
             <div>
               <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">
-                TARGET PROVINCE / REGION
+                INVESTOR LIQUID CAPITAL (CAD)
               </label>
               <select
-                value={formData.targetRegion}
-                onChange={(e) => setFormData({ ...formData, targetRegion: e.target.value })}
+                value={formData.capitalAmount}
+                onChange={(e) => setFormData({ ...formData, capitalAmount: Number(e.target.value) })}
                 className="w-full px-4 py-3 bg-[#111C38] border border-slate-700/60 rounded-xl text-white focus:outline-none focus:border-blue-500 transition"
               >
-                <option value="Alberta (Taber, Lethbridge, Calgary Region)">
-                  Alberta (Taber, Lethbridge, Calgary Region)
-                </option>
-                <option value="British Columbia (Okanagan, Vernon, Vancouver)">
-                  British Columbia (Okanagan, Vernon, Vancouver)
-                </option>
-                <option value="Saskatchewan (Regina, Regional Corridors)">
-                  Saskatchewan (Regina, Regional Corridors)
-                </option>
-                <option value="Manitoba (Winnipeg, Brandon Region)">
-                  Manitoba (Winnipeg, Brandon Region)
-                </option>
-                <option value="Ontario (Regional Ontario Corridors)">
-                  Ontario (Regional Ontario Corridors)
-                </option>
+                <option value={150000}>$150,000 CAD (Regional Tier)</option>
+                <option value={200000}>$200,000 CAD (Standard Regional Baseline)</option>
+                <option value={350000}>$350,000 CAD (Primary Metro Threshold)</option>
+                <option value={500000}>$500,000+ CAD (Multi-Site / GTA Baseline)</option>
+              </select>
+            </div>
+          </div>
+
+          {/* ========================================================= */}
+          {/* 2-STEP DEPENDENT DROPDOWNS: PROVINCE -> RANKED CORRIDOR  */}
+          {/* ========================================================= */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-5 bg-[#070D1E] rounded-xl border border-slate-800">
+            {/* STEP 1: SELECT PROVINCE */}
+            <div>
+              <label className="block text-xs font-semibold text-blue-400 uppercase tracking-wider mb-2">
+                1. SELECT TARGET PROVINCE
+              </label>
+              <select
+                value={selectedProvince}
+                onChange={(e) => handleProvinceChange(e.target.value)}
+                className="w-full px-4 py-3 bg-[#111C38] border border-blue-500/40 rounded-xl text-white font-semibold focus:outline-none focus:border-blue-400 transition"
+              >
+                {Object.keys(PROVINCE_CORRIDORS).map((prov) => (
+                  <option key={prov} value={prov}>
+                    {prov}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* STEP 2: RANKED MUNICIPAL CORRIDOR (GRADUAL RANKING DROP DOWN) */}
+            <div>
+              <label className="block text-xs font-semibold text-blue-400 uppercase tracking-wider mb-2">
+                2. MUNICIPAL DESTINATION (RANKED BEST TO LOWEST)
+              </label>
+              <select
+                value={selectedCorridorId}
+                onChange={(e) => setSelectedCorridorId(e.target.value)}
+                className="w-full px-4 py-3 bg-[#111C38] border border-blue-500/40 rounded-xl text-white font-semibold focus:outline-none focus:border-blue-400 transition"
+              >
+                {currentCorridors.map((c) => (
+                  <option key={c.id} value={c.id}>
+                    {c.rankBadge} - {c.name}
+                  </option>
+                ))}
               </select>
             </div>
           </div>
@@ -246,38 +417,51 @@ export default function IntakeWizard() {
             </select>
           </div>
 
-          {/* DYNAMIC ADVISORY & RECOMMENDATION CARD */}
-          {formData.targetRegion && (
+          {/* DYNAMIC ADVISORY & RECOMMENDATION PANEL */}
+          {activeCorridor && (
             <div
               className={`p-5 rounded-xl border transition ${
-                eligibility.isEligible
+                isCapitalSufficient
                   ? "bg-emerald-950/20 border-emerald-500/40 text-emerald-200"
                   : "bg-amber-950/20 border-amber-500/40 text-amber-200"
               }`}
             >
-              <div className="flex items-center gap-2 font-semibold text-base mb-2">
-                {eligibility.isEligible
-                  ? "✅ Destination & Capital Baseline Aligned"
-                  : "⚠️ Regional Eligibility Gap Identified"}
+              <div className="flex items-center justify-between font-semibold text-base mb-2">
+                <span className="flex items-center gap-2">
+                  {isCapitalSufficient ? "✅ Destination & Capital Baseline Aligned" : "⚠️️ Capital Gap / Remediation Required"}
+                </span>
+                <span className="text-xs px-2.5 py-1 rounded bg-slate-900 border border-slate-700 text-slate-300">
+                  EDO Support: {activeCorridor.edoSupportLevel}
+                </span>
               </div>
 
-              {!eligibility.isEligible ? (
-                <div>
-                  <p className="text-xs text-amber-300 mb-3">
-                    Your selected region ({formData.targetRegion}) typically requires a higher capital baseline or strategic modifications. Recommended solutions:
-                  </p>
-                  <ul className="space-y-1.5 text-xs list-disc pl-4 text-amber-100">
-                    {eligibility.recommendations.map((rec, idx) => (
-                      <li key={idx}>{rec}</li>
-                    ))}
+              <p className="text-xs text-slate-300 mb-2">
+                <strong className="text-white">Selected Destination:</strong> {activeCorridor.name} |{" "}
+                <strong className="text-white">Min Threshold:</strong> ${activeCorridor.minCapitalCAD.toLocaleString()} CAD
+              </p>
+
+              <p className="text-xs text-slate-400 mb-3">{activeCorridor.description}</p>
+
+              {!isCapitalSufficient ? (
+                <div className="space-y-1.5 pt-2 border-t border-amber-500/20 text-xs">
+                  <p className="font-semibold text-amber-300">💡 Actionable Remediation Options:</p>
+                  <ul className="list-disc pl-4 space-y-1 text-amber-100">
+                    <li>
+                      Top-up capital from current ${formData.capitalAmount.toLocaleString()} CAD to{" "}
+                      <strong>${activeCorridor.minCapitalCAD.toLocaleString()} CAD</strong> to meet local lease baseline.
+                    </li>
+                    <li>
+                      Or switch to the <strong>#1 Ranked Regional Option</strong> ({currentCorridors[0]?.name}) which fully accepts ${formData.capitalAmount.toLocaleString()} CAD.
+                    </li>
+                    <li>
+                      Apply under InvestNorth’s Option B ($3,200) with a binding 70%+ local supply chain agreement.
+                    </li>
                   </ul>
                 </div>
               ) : (
-                <ul className="space-y-1 text-xs list-disc pl-4 text-emerald-100">
-                  {eligibility.unlockedOptions.map((opt, idx) => (
-                    <li key={idx}>{opt}</li>
-                  ))}
-                </ul>
+                <div className="pt-2 border-t border-emerald-500/20 text-xs text-emerald-100">
+                  <strong>Path Alignment:</strong> Ideal for <em>{activeCorridor.recommendedStream}</em>. Unlocks maximum EDO backing and quick scope brief dispatch.
+                </div>
               )}
             </div>
           )}
@@ -306,8 +490,8 @@ export default function IntakeWizard() {
           </p>
 
           <p className="text-xs text-slate-400">
-            Client File: <span className="font-mono text-white font-semibold">{formData.clientFileId}</span> | Service:{" "}
-            <span className="font-semibold text-white">{formData.serviceRequested}</span>
+            Client File: <span className="font-mono text-white font-semibold">{formData.clientFileId}</span> | Destination:{" "}
+            <span className="font-semibold text-white">{activeCorridor.name}</span>
           </p>
 
           <div className="py-2 px-4 bg-emerald-900/40 border border-emerald-500/30 rounded-lg inline-block text-emerald-300 font-mono font-bold text-sm">
